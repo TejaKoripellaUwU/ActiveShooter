@@ -6,7 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.DefaultShooterCommand;
-import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.ShooterTBH;
 
 
 /**
@@ -16,7 +16,7 @@ import frc.robot.subsystems.Shooter;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  Shooter mShooter = new Shooter();
+  ShooterTBH mShooter = new ShooterTBH();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     mShooter.setDefaultCommand(new DefaultShooterCommand(mShooter));

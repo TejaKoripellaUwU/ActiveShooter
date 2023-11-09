@@ -6,22 +6,24 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Add your docs here. */
 public class Util {
+
     public static Translation3d getNormalTranslation(Translation3d vec){
         return(new Translation3d(vec.getX()/vec.getNorm(), vec.getY()/vec.getNorm(), vec.getZ()/vec.getNorm()));
     }
+
     public static class TBHController{
         private double mCurOutput = 0;
         private double mPrevError = 0;
         private double mSetPoint = 0;
-
-        private double mF;
         private double mTBHConstant;
-        private double mMaxOutput;
-        private double mTolerance;
-        private double mLastMeasurement = 0;
+
+        public final double mF;
+        private final double mMaxOutput;
+        private final double mTolerance;
 
         public TBHController(double f, double maxOutput,double tolerance){
             mF = f;
@@ -45,12 +47,6 @@ public class Util {
             }
             return mCurOutput;
         }
-        public void setF(double f){
-            mF = f;
-        }
-        public void setTolerance(double tolerance){
-            mTolerance = tolerance;
-        }
         public void setSpNoSpinUp(double f){
             mSetPoint = f;
         }
@@ -64,7 +60,18 @@ public class Util {
             mSetPoint = targetOutput;
         }
         public boolean atSetpoint(){
-            return Math.abs(mLastMeasurement-mSetPoint) <= mTolerance;
+            return Math.abs(mCurOutput-mSetPoint) <= mTolerance;
         }
+
+        public void writeDebugData() {
+            SmartDashboard.putNumber("mF Constant TBH Controller", mF);
+            SmartDashboard.putNumber("Previous Error TBH Controller", mPrevError);
+            SmartDashboard.putBoolean("TBH Controller", atSetpoint());
+        }
+
+        public double getCurOutput(){return mCurOutput;}
+        public double getPrevError(){return mPrevError;}
+        public double getSetpoint(){return mSetPoint;}
+        public double getTBHConstant(){return mTBHConstant;}
     }
 }

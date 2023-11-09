@@ -46,5 +46,6 @@ public class ShooterConstants {
 
     public static final double FLYWHEEL_RADIUS_CM = 20;
     public static final double ROLLER_RADIUS_CM = 20;
+    public static final double FLYWHEEL_SP_DEADZONE = 0;
 
 }

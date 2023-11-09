@@ -5,15 +5,18 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Util.TBHController;
 import frc.robot.constants.ShooterConstants;
 
-public class Shooter extends ShooterBase {
+public class ShooterTBH extends ShooterBase {
   /** Creates a new Shooter. */
   TBHController mFlywheelController = new TBHController(ShooterConstants.FLYWHEEL_TBH_CONSTANT, ShooterConstants.PHYSICAL_MAX_RPM_FLYWHEEL);
   TBHController mRollerController = new TBHController(ShooterConstants.ROLLER_TBH_CONSTANT, ShooterConstants.PHYSICAL_MAX_RPM_ROLLER);
   
-  public Shooter() {
+  public ShooterTBH() {
     super();
   }
 
@@ -33,21 +36,26 @@ public class Shooter extends ShooterBase {
     mRollerSetpoint+=increment;
     mRollerController.spinUp(mRollerSetpoint);
   }
-
   public boolean atDesiredFlywheelRPM(){
     return mFlywheelController.atSetpoint();
   }
   public boolean atDesiredRollerRPM(){
     return mFlywheelController.atSetpoint();
   }
+  public void writeControllerDebugData(){
+    SmartDashboard.putNumber("Flywheel Controller Output", mFlywheelController.getCurOutput());
+    SmartDashboard.putNumber("Flywheel Controller Prev Error", mFlywheelController.getPrevError());
+    SmartDashboard.putNumber("Flywheel Controller Setpoint", mFlywheelController.getSetpoint());
+    SmartDashboard.putNumber("Flywheel Controller TBH Constant", mFlywheelController.getTBHConstant());
+
+    SmartDashboard.putNumber("Roller Controller Output", mRollerController.getCurOutput());
+    SmartDashboard.putNumber("Roller Controller Prev Error", mRollerController.getPrevError());
+    SmartDashboard.putNumber("Roller Controller Setpoint", mRollerController.getSetpoint());
+    SmartDashboard.putNumber("Roller Controller TBH Constant", mRollerController.getTBHConstant());
+  }
 
   public void runSpeedControl(){
     mFlyWheelMotor.set(TalonFXControlMode.PercentOutput, mFlywheelController.calculate(getFlywheelRPM()));
     mRollerMotor.set(TalonFXControlMode.PercentOutput, mRollerController.calculate(getRollerRPM()));
-  }
-  
-  @Override
-  public void periodic() {
-    runSpeedControl();
   }
 }

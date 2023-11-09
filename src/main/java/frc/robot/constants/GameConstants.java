@@ -7,5 +7,6 @@ package frc.robot.constants;
 /** Add your docs here. */
 public class GameConstants {
     public static final double BALL_RADIUS_CM = 20;
+    public static final boolean DEBUG_MODE = true;
 
 }
