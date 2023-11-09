@@ -29,7 +29,7 @@ abstract class ShooterBase extends SubsystemBase {
     mRollerMotor.setInverted(ShooterConstants.INVERT_ROLLER_MOTOR);
 
     mFlyWheelMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-    mFlyWheelMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+    mRollerMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 
     mFlyWheelMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
     mRollerMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);

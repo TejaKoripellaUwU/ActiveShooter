@@ -12,7 +12,6 @@ public class ShooterNoFeedback extends ShooterBase {
   public ShooterNoFeedback() {
     super();
   }
-
   public void setDesiredFlywheelRPM(double rpm){
     mFlywheelSetpoint = rpm;
   }
