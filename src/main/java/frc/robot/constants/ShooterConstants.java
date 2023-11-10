@@ -26,8 +26,8 @@ public class ShooterConstants {
     private static final double PHYSICAL_MAX_RPM_FALCON = 6380;
 
     private static final double ENCODER_VEL_TO_MOTOR_RPM = 600/ENCODER_TICKS_PER_ROTATION; 
-    private static final double MOTOR_TO_FLWHEEL_GEAR_RATIO = 5.0/3; //not done
-    private static final double MOTOR_TO_ROLLER_GEAR_RATIO = 5.0/3; //not done
+    private static final double MOTOR_TO_FLWHEEL_GEAR_RATIO = 5.0/3;
+    private static final double MOTOR_TO_ROLLER_GEAR_RATIO = 5.0/3;
 
     public static final double SENSOR_VEL_TO_FLYWHEEL_RPM = ENCODER_VEL_TO_MOTOR_RPM * MOTOR_TO_FLWHEEL_GEAR_RATIO;
     public static final double SENSOR_VEL_TO_ROLLER_RPM = ENCODER_VEL_TO_MOTOR_RPM * MOTOR_TO_ROLLER_GEAR_RATIO;
@@ -40,6 +40,10 @@ public class ShooterConstants {
 
     public static final double FLYWHEEL_TBH_CONSTANT = 0.03;
     public static final double ROLLER_TBH_CONSTANT = 0;
+
+    public static final boolean FLYWHEEL_SENSOR_PHASE = false;
+    public static final boolean ROLLER_SENSOR_PHASE = false;
+
 
     public static final Translation3d FLYWHEEL_LOC_M = new Translation3d(-0.5, 0, 0.4);
     public static final Translation3d ROLLER_LOC_M = new Translation3d(-0.8,0,0.5);

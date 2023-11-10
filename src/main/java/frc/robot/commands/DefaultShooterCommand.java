@@ -9,13 +9,12 @@ import frc.robot.Input;
 import frc.robot.constants.InputConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.ShooterConstants.ShooterState;
-import frc.robot.subsystems.ShooterNoFeedback;
-import frc.robot.subsystems.ShooterTBH;
+import frc.robot.subsystems.ShooterIntegratedPID;
 
 public class DefaultShooterCommand extends CommandBase {
   /** Creates a new DefaultShooterCommand. */
-  ShooterNoFeedback mShooter;
-  public DefaultShooterCommand(ShooterNoFeedback shooter) {
+  ShooterIntegratedPID mShooter;
+  public DefaultShooterCommand(ShooterIntegratedPID shooter) {
     mShooter = shooter;
     addRequirements(shooter);
   }
