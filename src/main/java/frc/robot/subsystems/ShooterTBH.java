@@ -6,7 +6,6 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Util.TBHController;
 import frc.robot.constants.ShooterConstants;
@@ -18,6 +17,9 @@ public class ShooterTBH extends ShooterBase {
   
   public ShooterTBH() {
     super();
+  }
+  protected void setOnboardFeedbackConstants(){
+    //No onboard feedback necessary
   }
 
   public void setDesiredFlywheelRPM(double rpm){
@@ -45,12 +47,10 @@ public class ShooterTBH extends ShooterBase {
   public void writeControllerDebugData(){
     SmartDashboard.putNumber("Flywheel Controller Output", mFlywheelController.getCurOutput());
     SmartDashboard.putNumber("Flywheel Controller Prev Error", mFlywheelController.getPrevError());
-    SmartDashboard.putNumber("Flywheel Controller Setpoint", mFlywheelController.getSetpoint());
     SmartDashboard.putNumber("Flywheel Controller TBH Constant", mFlywheelController.getTBHConstant());
 
     SmartDashboard.putNumber("Roller Controller Output", mRollerController.getCurOutput());
     SmartDashboard.putNumber("Roller Controller Prev Error", mRollerController.getPrevError());
-    SmartDashboard.putNumber("Roller Controller Setpoint", mRollerController.getSetpoint());
     SmartDashboard.putNumber("Roller Controller TBH Constant", mRollerController.getTBHConstant());
   }
 

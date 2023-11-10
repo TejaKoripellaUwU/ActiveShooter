@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
 import edu.wpi.first.math.geometry.Translation3d;
@@ -25,16 +26,24 @@ abstract class ShooterBase extends SubsystemBase {
   protected double mFlywheelSetpoint = ShooterConstants.ShooterState.HOME.mFlyWheelRPM;
 
   protected ShooterBase() {
+    mFlyWheelMotor.configFactoryDefault();
+    mRollerMotor.configFactoryDefault();
+
+    setOnboardFeedbackConstants();
+
     mFlyWheelMotor.setInverted(ShooterConstants.INVERT_FLYWHEEL_MOTOR);
     mRollerMotor.setInverted(ShooterConstants.INVERT_ROLLER_MOTOR);
 
     mFlyWheelMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
     mRollerMotor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-
+    
+    mFlyWheelMotor.setSensorPhase(ShooterConstants.FLYWHEEL_SENSOR_PHASE);
+    mRollerMotor.setSensorPhase(ShooterConstants.ROLLER_SENSOR_PHASE);
+    
     mFlyWheelMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
     mRollerMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
-    
   }
+  protected abstract void setOnboardFeedbackConstants();
 
   abstract void runSpeedControl();
 
