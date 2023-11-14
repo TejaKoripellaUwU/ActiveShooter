@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.XboxController;
 /** Add your docs here. */
 public class Input {
 
-    private static final XboxController mController = new XboxController(0);
+    private static final XboxController mController = new XboxController(1);
     public static double getLeftJoyY(){return mController.getLeftY();}
     public static double getRightJoyY(){return mController.getRightY();}
     public static boolean getXPressed(){return mController.getXButton();}
