@@ -30,7 +30,7 @@ public class DefaultShooterCommand extends CommandBase {
       mShooter.setToShooterState(ShooterState.READY);
     }
     if (Input.getBPressed()){
-      mShooter.setToShooterState(ShooterState.HOME);
+      mShooter.stopMotors();
     }
     if (Input.getYPressed()){
       mShooter.setToShooterState(ShooterState.STATE_1);
