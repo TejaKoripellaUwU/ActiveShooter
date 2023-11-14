@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.SensorTerm;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
@@ -12,26 +11,28 @@ import frc.robot.constants.ShooterConstants;
 
 public class ShooterIntegratedPID extends ShooterBase {
   /** Creates a new Shooter. */
-  private final TalonFXConfiguration mRollerConfig = new TalonFXConfiguration();
-  private final TalonFXConfiguration mFlywheelConfig = new TalonFXConfiguration();
   public ShooterIntegratedPID() {
     super();
   }
   protected void setOnboardFeedbackConstants(){
     //All PID constants need to be tuned
-    
-    mRollerConfig.slot0.kP = 0.5;
-    mRollerConfig.slot0.kI = 0.0;
-    mRollerConfig.slot0.kD = 0.005;
 
-    mFlywheelConfig.slot0.kP = 0.5;
-    mFlywheelConfig.slot0.kI = 0.0;
-    mFlywheelConfig.slot0.kD = 0.005;
-    
+    mRollerConfig.slot1.kP = 0.2;
+    mRollerConfig.slot1.kI = 0.0;
+    mRollerConfig.slot1.kD = 0.05;
+    mRollerConfig.slot1.kF = 0.01;
+    mRollerConfig.slot1.allowableClosedloopError = 10;
+
+    mFlywheelConfig.slot1.kP = 0.2;
+    mFlywheelConfig.slot1.kI = 0.0;
+    mFlywheelConfig.slot1.kD = 0.05;
+    mFlywheelConfig.slot1.kF = 0.01;
+    mFlywheelConfig.slot1.allowableClosedloopError = 10;
+   
     mFlyWheelMotor.configAllSettings(mFlywheelConfig);
     mRollerMotor.configAllSettings(mRollerConfig);
-    mFlyWheelMotor.selectProfileSlot(0, 0);
-    mRollerMotor.selectProfileSlot(0, 0);
+    mFlyWheelMotor.selectProfileSlot(1, 0);
+    mRollerMotor.selectProfileSlot(1, 0);
   }
   public void setDesiredFlywheelRPM(double rpm){
     mFlywheelSetpoint = rpm;
@@ -52,8 +53,8 @@ public class ShooterIntegratedPID extends ShooterBase {
     return Math.abs(Math.abs(mRollerSetpoint)-Math.abs(getRollerRPM())) > ShooterConstants.FLYWHEEL_SP_DEADZONE;
   }
   public void runSpeedControl(){
-    mFlyWheelMotor.set(TalonFXControlMode.Velocity, mFlywheelSetpoint/ShooterConstants.SENSOR_VEL_TO_FLYWHEEL_RPM);
-    mRollerMotor.set(TalonFXControlMode.Velocity, mRollerSetpoint/ShooterConstants.SENSOR_VEL_TO_ROLLER_RPM);
+    mFlyWheelMotor.set(TalonFXControlMode.Velocity, mFlywheelSetpoint/ShooterConstants.ENCODER_VEL_TO_FLYWHEEL_RPM);
+    mRollerMotor.set(TalonFXControlMode.Velocity, mRollerSetpoint/ShooterConstants.ENCODER_VEL_TO_ROLLER_RPM);
   }
   public void writeControllerDebugData(){
     //since we have no controller no debug data is provided
