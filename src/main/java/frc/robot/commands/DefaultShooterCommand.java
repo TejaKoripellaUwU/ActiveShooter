@@ -13,6 +13,7 @@ import frc.robot.subsystems.ShooterIntegratedPID;
 
 public class DefaultShooterCommand extends CommandBase {
   /** Creates a new DefaultShooterCommand. */
+  boolean mToggleCoast = false;
   ShooterIntegratedPID mShooter;
   public DefaultShooterCommand(ShooterIntegratedPID shooter) {
     mShooter = shooter;
@@ -30,19 +31,22 @@ public class DefaultShooterCommand extends CommandBase {
       mShooter.setToShooterState(ShooterState.READY);
     }
     if (Input.getBPressed()){
-      mShooter.stopMotors();
+      mToggleCoast = !mToggleCoast;
+      if (mToggleCoast){
+        mShooter.stopMotors();
+      }
     }
     if (Input.getYPressed()){
       mShooter.setToShooterState(ShooterState.STATE_1);
     }
     if (Input.getXPressed()){
-      mShooter.setToShooterState(ShooterState.STATE_1);
+      mShooter.setToShooterState(ShooterState.STATE_2);
     }
     if (Math.abs(Input.getLeftJoyY())>InputConstants.LSTICKDEADZONE){
-      mShooter.setDesiredFlywheelRPM(Input.getLeftJoyY()*ShooterConstants.PHYSICAL_MAX_RPM_FLYWHEEL);
+      mShooter.changeFlywheelRPM(Input.getLeftJoyY()*ShooterConstants.PHYSICAL_MAX_RPM_FLYWHEEL);
     }
     if (Math.abs(Input.getRightJoyY())>InputConstants.RSTICKDEADZONE){
-      mShooter.setDesiredRollerRPM(Input.getRightJoyY()*ShooterConstants.PHYSICAL_MAX_RPM_FLYWHEEL);
+      mShooter.changeFlywheelRPM(Input.getRightJoyY()*ShooterConstants.PHYSICAL_MAX_RPM_ROLLER);
     }
   }
 

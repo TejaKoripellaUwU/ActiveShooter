@@ -11,7 +11,7 @@ import edu.wpi.first.math.geometry.Translation3d;
 public class ShooterConstants {
     public enum ShooterState{
         READY(1000,1000),
-        STATE_1(100,10),
+        STATE_1(2000,1000),
         STATE_2(200,50),
         HOME(0,0);
         public final double mFlyWheelRPM;
@@ -22,13 +22,13 @@ public class ShooterConstants {
         }
       }
 
-    private static final double ENCODER_TICKS_PER_ROTATION = 2048;
-    private static final double PHYSICAL_MAX_RPM_FALCON = 6380;
+    public static final double ENCODER_TICKS_PER_ROTATION = 2048;
+    public static final double PHYSICAL_MAX_RPM_FALCON = 6380;
 
-    //2048 sensor units/ 100 ms
-    private static final double ENCODER_VEL_TO_MOTOR_RPM = 10*2*Math.PI/ENCODER_TICKS_PER_ROTATION; 
-    private static final double MOTOR_TO_FLWHEEL_GEAR_RATIO = 5.0/3;
-    private static final double MOTOR_TO_ROLLER_GEAR_RATIO = 5.0/3;
+    //2048 sensor units/ 100 ms  -> RPM
+    public static final double ENCODER_VEL_TO_MOTOR_RPM = 600/ENCODER_TICKS_PER_ROTATION; 
+    public static final double MOTOR_TO_FLWHEEL_GEAR_RATIO = 5.0/3;
+    public static final double MOTOR_TO_ROLLER_GEAR_RATIO = 5.0/3;
 
     public static final double ENCODER_VEL_TO_FLYWHEEL_RPM = ENCODER_VEL_TO_MOTOR_RPM * MOTOR_TO_FLWHEEL_GEAR_RATIO;
     public static final double ENCODER_VEL_TO_ROLLER_RPM = ENCODER_VEL_TO_MOTOR_RPM * MOTOR_TO_ROLLER_GEAR_RATIO;
@@ -50,7 +50,9 @@ public class ShooterConstants {
 
     public static final double FLYWHEEL_RADIUS_CM = 20;
     public static final double ROLLER_RADIUS_CM = 20;
-    public static final double FLYWHEEL_SP_DEADZONE = 0;
+    public static final double FLYWHEEL_SP_DEADZONE = 0.05;
+    public static final double ROLLER_SP_DEADZONE = 0.05;
+
     
     public static final int FLYWHEEL_TALON_ID = 8;
     public static final int ROLLER_TALON_ID = 7;
