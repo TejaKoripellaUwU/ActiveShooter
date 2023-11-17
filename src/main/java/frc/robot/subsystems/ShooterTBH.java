@@ -55,7 +55,7 @@ public class ShooterTBH extends ShooterBase {
   }
 
   public void runSpeedControl(){
-    mFlyWheelMotor.set(motorControl, mFlywheelController.calculate(getFlywheelRPM()));
-    mRollerMotor.set(motorControl, mRollerController.calculate(getRollerRPM()));
+    mFlyWheelMotor.set(mMotorControl, mFlywheelController.calculate(getFlywheelRPM()));
+    mRollerMotor.set(mMotorControl, mRollerController.calculate(getRollerRPM()));
   }
 }

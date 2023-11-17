@@ -4,17 +4,9 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.DefaultShooterCommand;
-import frc.robot.commands.SubsystemCharacterization;
-import frc.robot.constants.GameConstants;
-import frc.robot.constants.ShooterConstants;
 import frc.robot.subsystems.ShooterIntegratedPID;
-import frc.robot.subsystems.ShooterTBH;
 
 
 /**
@@ -29,13 +21,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    if(GameConstants.RUN_SHOOTER_CHARACTERIZATION){
-      mShooter.setDefaultCommand(new SubsystemCharacterization(mShooter, mShooter::getFlywheelRPM,
-       (double rpm)->mShooter.setDesiredFlywheelRPM(rpm), mShooter::stopMotors,
-        5, ShooterConstants.PHYSICAL_MAX_RPM_FLYWHEEL));
-    } else{
       mShooter.setDefaultCommand(new DefaultShooterCommand(mShooter));
-    }
   }
 
   /**

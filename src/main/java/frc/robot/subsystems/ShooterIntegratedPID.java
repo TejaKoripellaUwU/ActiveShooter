@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
@@ -15,16 +16,6 @@ import frc.robot.constants.ShooterConstants;
 
 public class ShooterIntegratedPID extends ShooterBase {
   /** Creates a new Shooter. */
-  // XboxController m_gamepad = new XboxController(0);
-
-  // WPI_TalonFX m_leftDrive = new WPI_TalonFX(0, "rio");
-  // WPI_TalonFX m_leftFollower = new WPI_TalonFX(1, "rio");
-  // WPI_TalonFX m_rightDrive = new WPI_TalonFX(2, "rio");
-  // WPI_TalonFX m_rightFollower = new WPI_TalonFX(3, "rio");
-
-  // /* Object for simulated inputs into Talon. */
-  // TalonFXSimCollection m_leftDriveSim = m_leftDrive.getSimCollection();
-  // TalonFXSimCollection m_rightDriveSim = m_rightDrive.getSimCollection();
 
   public ShooterIntegratedPID() {
     super();
@@ -50,21 +41,22 @@ public class ShooterIntegratedPID extends ShooterBase {
     mRollerMotor.selectProfileSlot(1, 0);
   }
   public void setDesiredFlywheelRPM(double rpm){
-    motorControl = TalonFXControlMode.Velocity;
+    mMotorControl = TalonFXControlMode.Velocity;
     mFlywheelSetpoint = rpm;
   }
   public void setDesiredRollerRPM(double rpm){
-    motorControl = TalonFXControlMode.Velocity;
+    mMotorControl = TalonFXControlMode.Velocity;
     mRollerSetpoint = rpm;
    }
   public void changeFlywheelRPM(double increment){
-    motorControl = TalonFXControlMode.Velocity;
+    mMotorControl = TalonFXControlMode.Velocity;
     mFlywheelSetpoint+=increment;
   }
   public void changeRollerRPM(double increment){
-    motorControl = TalonFXControlMode.Velocity;
+    mMotorControl = TalonFXControlMode.Velocity;
     mRollerSetpoint+=increment;
   }
+
   public boolean atDesiredFlywheelRPM(){
     return Math.abs(Math.abs(mFlywheelSetpoint)-Math.abs(getFlywheelRPM())) > ShooterConstants.FLYWHEEL_SP_DEADZONE;
   }
@@ -72,8 +64,8 @@ public class ShooterIntegratedPID extends ShooterBase {
     return Math.abs(Math.abs(mRollerSetpoint)-Math.abs(getRollerRPM())) > ShooterConstants.FLYWHEEL_SP_DEADZONE;
   }
   public void runSpeedControl(){
-    mFlyWheelMotor.set(motorControl, velocityToNativeUnits(mFlywheelSetpoint));
-    mRollerMotor.set(motorControl, velocityToNativeUnits(mRollerSetpoint));
+    mFlyWheelMotor.set(mMotorControl, velocityToNativeUnits(mFlywheelSetpoint,ShooterType.FLYWHEEL));
+    mRollerMotor.set(mMotorControl, velocityToNativeUnits(mRollerSetpoint,ShooterType.ROLLER));
   }
   public void writeControllerDebugData(){
     //since we have no controller no debug data is provided

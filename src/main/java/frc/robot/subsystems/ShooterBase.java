@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import org.ejml.simple.SimpleMatrix;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
@@ -20,6 +21,7 @@ import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -52,7 +54,7 @@ abstract class ShooterBase extends SubsystemBase {
   protected final TalonFXConfiguration mRollerConfig = new TalonFXConfiguration();
   protected final TalonFXConfiguration mFlywheelConfig = new TalonFXConfiguration();
 
-  protected TalonFXControlMode motorControl = TalonFXControlMode.Velocity;
+  protected TalonFXControlMode mMotorControl = TalonFXControlMode.Velocity;
 
   protected ShooterBase() {
     mFlyWheelMotor.configFactoryDefault();
@@ -95,32 +97,33 @@ abstract class ShooterBase extends SubsystemBase {
 
   abstract boolean atDesiredRollerRPM();
 
+  public void setMotorRaw(){
+    mFlyWheelMotor.set(ControlMode.MotionMagic, mFlywheelSetpoint);
+  }
+
   public void setToShooterState(ShooterState state){
-    motorControl = TalonFXControlMode.Velocity;
+    mMotorControl = TalonFXControlMode.Velocity;
     setDesiredFlywheelRPM(state.mFlyWheelRPM);
     setDesiredRollerRPM(state.mRollerRPM);
   }
 
   public double getRollerRPM(){
-    if(Robot.isSimulation()){
-      return mRollerSim.getAngularVelocityRPM();
-    }
-    return mFlyWheelMotor.getSelectedSensorVelocity()*ShooterConstants.ENCODER_VEL_TO_ROLLER_RPM;
+    return nativeUnitsToVelocity(mRollerMotor.getSelectedSensorVelocity(),ShooterType.ROLLER);
   }
 
   public double getFlywheelRPM(){
-    if(Robot.isSimulation()){
-      return mFlywheelSim.getAngularVelocityRPM();
-    }
-    return mRollerMotor.getSelectedSensorVelocity()*ShooterConstants.ENCODER_VEL_TO_FLYWHEEL_RPM;
+    return nativeUnitsToVelocity(mFlyWheelMotor.getSelectedSensorVelocity(),ShooterType.FLYWHEEL);
   }
   public void writeMotorDebugData(){
+    SmartDashboard.putString("Exit Pose shooter", calcExitPos().toString());
+    SmartDashboard.putNumber("Exit Angle shooter", calcExitAngle());
     SmartDashboard.putNumber("RollerRPMNativeUnits", mRollerMotor.getSelectedSensorVelocity());
     SmartDashboard.putNumber("FlyWheelRPMNativeUnits", mFlyWheelMotor.getSelectedSensorVelocity());
 
-    SmartDashboard.putNumber("FlyWheelRPMReal", mFlyWheelMotor.getSelectedSensorVelocity()*ShooterConstants.ENCODER_VEL_TO_ROLLER_RPM);
-    SmartDashboard.putNumber("RollerWheelRPMReal", mRollerMotor.getSelectedSensorVelocity()*ShooterConstants.ENCODER_VEL_TO_FLYWHEEL_RPM);
+    SmartDashboard.putNumber("FlyWheelRPMReal", getFlywheelRPM());
+    SmartDashboard.putNumber("RollerWheelRPMReal", getRollerRPM());
     
+
     SmartDashboard.putNumber("Flywheel Setpoint RPM", mFlywheelSetpoint);
     SmartDashboard.putNumber("Roller Setpoint RPM", mRollerSetpoint);
 
@@ -134,7 +137,7 @@ abstract class ShooterBase extends SubsystemBase {
   abstract void writeControllerDebugData();
   
   public void stopMotors(){
-    motorControl = TalonFXControlMode.Disabled;
+    mMotorControl = TalonFXControlMode.Disabled;
     mFlywheelSetpoint = 0;
     mRollerSetpoint = 0;
   }
@@ -152,18 +155,30 @@ abstract class ShooterBase extends SubsystemBase {
   }
 
 
-  protected int velocityToNativeUnits(double velocityRPM){
-    double motorRotationsPerMin = velocityRPM / ShooterConstants.MOTOR_TO_ROLLER_GEAR_RATIO;
+  protected int velocityToNativeUnits(double velocityRPM, ShooterType mode){
+    double motorRotationsPerMin = velocityRPM * mode.mGearRatioToSensor;
     double motorRotationsPer100ms = motorRotationsPerMin / 600;
-    int sensorCountsPer100ms = (int)(motorRotationsPer100ms * ShooterConstants.ENCODER_TICKS_PER_ROTATION);
-    return sensorCountsPer100ms;
+    return (int)(motorRotationsPer100ms * ShooterConstants.ENCODER_TICKS_PER_ROTATION);
   }
 
-  protected double nativeUnitsToVelocity(double sensorCounts){
-    double motorRotationsPer100ms = (double)sensorCounts / ShooterConstants.ENCODER_TICKS_PER_ROTATION;
+  protected double nativeUnitsToVelocity(double sensorCounts, ShooterType mode){
+    double motorRotationsPer100ms = sensorCounts / ShooterConstants.ENCODER_TICKS_PER_ROTATION;
     double motorRotationsPerMin = motorRotationsPer100ms * 600;
-    double flywheelRotationPerMin = motorRotationsPerMin * ShooterConstants.MOTOR_TO_FLWHEEL_GEAR_RATIO;
-    return flywheelRotationPerMin;
+    return motorRotationsPerMin * mode.mGearRatioToMotor;
+  }
+
+  private Translation3d calcExitPos(){
+    Translation3d originTranslation = ShooterConstants.ROLLER_LOC_M.minus(ShooterConstants.FLYWHEEL_LOC_M);
+    double midpoint = (originTranslation.getNorm()-ShooterConstants.ROLLER_RADIUS_M-ShooterConstants.FLYWHEEL_RADIUS_M)/2;
+    Translation3d midPointVector = Util.getNormalTranslation(originTranslation).times((ShooterConstants.FLYWHEEL_RADIUS_M + midpoint));
+    return midPointVector.plus(ShooterConstants.FLYWHEEL_LOC_M);
+  }
+
+  private double calcExitAngle(){
+    Translation3d originTranslation = ShooterConstants.ROLLER_LOC_M.minus(ShooterConstants.FLYWHEEL_LOC_M);
+    Translation3d perpendicularVec = originTranslation.rotateBy(new Rotation3d(0, Math.PI/2, 0));
+    Translation3d homePerpendicularVec = perpendicularVec.minus(originTranslation);
+    return Math.toDegrees(Math.atan(homePerpendicularVec.getZ()/homePerpendicularVec.getX()));
   }
 
   @Override
@@ -181,7 +196,7 @@ abstract class ShooterBase extends SubsystemBase {
 
     SmartDashboard.putNumber("Flywheel sim output", mFlywheelSim.getAngularVelocityRPM());
 
-    mFlywheelFalconSim.setIntegratedSensorVelocity(velocityToNativeUnits(mFlywheelSim.getAngularVelocityRPM()));
-    mRollerFalconSim.setIntegratedSensorVelocity(velocityToNativeUnits(mRollerSim.getAngularVelocityRPM()));
+    mFlywheelFalconSim.setIntegratedSensorVelocity(velocityToNativeUnits(mFlywheelSim.getAngularVelocityRPM(),ShooterType.FLYWHEEL));
+    mRollerFalconSim.setIntegratedSensorVelocity(velocityToNativeUnits(mRollerSim.getAngularVelocityRPM(),ShooterType.ROLLER));
   }
 }

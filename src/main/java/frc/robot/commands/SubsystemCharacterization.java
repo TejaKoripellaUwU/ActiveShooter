@@ -57,11 +57,12 @@ public class SubsystemCharacterization extends CommandBase {
     double measurement = mMeasurementSupplier.getAsDouble();
     double rate = (measurement-mPrevOutputVal)/(mTimer.get()-mPrevOutputTime);
     if(measurement>mMaxOutput){mMaxOutput = measurement;}
-    if(rate>mMaxRate){mMaxRate = measurement-mPrevOutputVal;}
+    if(rate>mMaxRate){mMaxRate = rate;}
 
     mPrevOutputTime = mTimer.get();
     mPrevOutputVal = measurement;
-
+    SmartDashboard.putNumber("Max Input", mMaxInput);
+    SmartDashboard.putNumber("Max Input", mMaxInput);
     SmartDashboard.putNumber("Plant Measurement", measurement);
     SmartDashboard.putNumber("Plant Rate", rate);
     SmartDashboard.putNumber("Plant Max Measurement", mMaxOutput);
