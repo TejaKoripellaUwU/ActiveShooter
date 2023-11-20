@@ -181,6 +181,10 @@ abstract class ShooterBase extends SubsystemBase {
     return Math.toDegrees(Math.atan(homePerpendicularVec.getZ()/homePerpendicularVec.getX()));
   }
 
+  private double calcExitVel(){
+    return 2;
+  }
+
   @Override
   public void simulationPeriodic(){
     writeMotorDebugData();
