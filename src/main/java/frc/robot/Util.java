@@ -4,7 +4,10 @@
 //
 package frc.robot;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -15,6 +18,67 @@ public class Util {
         return(new Translation3d(vec.getX()/vec.getNorm(), vec.getY()/vec.getNorm(), vec.getZ()/vec.getNorm()));
     }
 
+    public static class PIDConstants{
+        public double mKP;
+        public double mKI;
+        public double mKD;
+        public double mKV;
+        public double mKS;
+        public double mContinuousInputMax;
+        public double mContinuousInputMin;
+        public boolean mIsContinuousInput;
+
+
+        public PIDConstants(double kP, double kI, double kD, double kV, double kS, double continuousInputMax, double continuousInputMin){
+            mKP = kP;
+            mKI = kI;
+            mKD = kD;
+            mKV = kV;
+            mKS = kS;
+            mContinuousInputMax = continuousInputMax;
+            mContinuousInputMin = continuousInputMin;
+            mIsContinuousInput = true;
+        }
+
+        public PIDConstants(double kP, double kI, double kD, double kS, double kV){
+            new PIDConstants(kP, kI, kD, kS, kV,0,0);
+            mIsContinuousInput = false;
+        }
+
+        public PIDConstants(double kP, double kI, double kD){
+            new PIDConstants(kP, kI, kD, 0, 0,0,0);
+            mIsContinuousInput = false;
+        }
+        
+
+        public PIDController toWPIController(){
+            PIDController pid = new PIDController(mKP, mKI, mKD);
+            if(mIsContinuousInput){pid.enableContinuousInput(mContinuousInputMin, mContinuousInputMax);}
+            return pid;
+        }
+
+        public TalonFXConfiguration toTalonConfiguration(){
+            TalonFXConfiguration config = new TalonFXConfiguration();
+            config.Slot0.kP = mKP;//0.2
+            config.Slot0.kI = mKI;
+            config.Slot0.kD = mKD;//0.05
+            config.Slot0.kV = mKV;
+            config.Slot0.kS = mKS;
+            config.ClosedLoopGeneral.ContinuousWrap = mIsContinuousInput;
+            return config;
+        }
+    }
+    public enum POV{
+        DPADUP(0),
+        DPADRIGHT(90),
+        DPADDOWN(180),
+        DPADLEFT(270);
+
+        public final int mAngle;
+        private POV(int angle){
+            mAngle = angle;
+        }
+    }
     public static class TBHController{
         private double mCurOutput = 0;
         private double mPrevError = 0;

@@ -3,10 +3,11 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.constants;
-
+import frc.robot.constants.GameConstants;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Util.PIDConstants;
 
 /** Add your docs here. */
 public class ShooterConstants {
@@ -55,9 +56,19 @@ public class ShooterConstants {
     public static final double ROLLER_RADIUS_M = Units.inchesToMeters(6);
     public static final double FLYWHEEL_SP_DEADZONE = 0.05;
     public static final double ROLLER_SP_DEADZONE = 0.05;
-
     
     public static final int FLYWHEEL_TALON_ID = 8;
     public static final int ROLLER_TALON_ID = 7;
+    
+    public static final PIDConstants FLYWHEEL_PID = 
+    new PIDConstants(48.0469,0.0,0.0012,0,0);
+  
+    public static final PIDConstants ROLLER_PID = 
+    new PIDConstants(48.0469,0.0,0.0012,0,0);
 
+    public static PIDConstants TUNABLE_FLYWHEEL_PID = 
+    new PIDConstants(48.0469,0.0,0.0012,0,0);
+  
+    public static PIDConstants TUNABLE_ROLLER_PID = 
+    new PIDConstants(48.0469,0.0,0.0012,0,0);
 }

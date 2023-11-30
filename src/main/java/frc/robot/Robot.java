@@ -4,12 +4,9 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.sensors.BasePigeonSimCollection;
-import com.ctre.phoenix.sensors.WPI_Pigeon2;
-import frc.robot.commands.SubsystemCharacterization;
 
+import frc.robot.commands.SubsystemCharacterization;
+import frc.robot.commands.SubsystemPIDTuning;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -32,6 +29,7 @@ import frc.robot.constants.ShooterConstants;
 public class Robot extends TimedRobot {
   
 
+
   /*
    * These numbers are an example AndyMark Drivetrain with some additional weight.  This is a fairly light robot.
    * Note you can utilize results from robot characterization instead of theoretical numbers.
@@ -52,14 +50,22 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-
-    if (GameConstants.RUN_SHOOTER_CHARACTERIZATION){
-      m_autonomousCommand = new SubsystemCharacterization(m_robotContainer.mShooter, m_robotContainer.mShooter::getFlywheelRPM,
-      (double rpm)->m_robotContainer.mShooter.setDesiredFlywheelRPM(rpm), m_robotContainer.mShooter::stopMotors,
-       5, ShooterConstants.PHYSICAL_MAX_RPM_FLYWHEEL);
+    switch (GameConstants.CUR_MODE){
+      case CHARACTERIZATION_FLYWHEEL:
+        m_autonomousCommand = new SubsystemCharacterization(m_robotContainer.mShooter, m_robotContainer.mShooter::getFlywheelRPM,
+        (double rpm)->{m_robotContainer.mShooter.setDesiredFlywheelRPM(rpm);}, m_robotContainer.mShooter::stopMotors,
+        5, ShooterConstants.PHYSICAL_MAX_RPM_FLYWHEEL);
+        break;
+      case CHARACTERIZATION_ROLLER:
+        m_autonomousCommand = new SubsystemCharacterization(m_robotContainer.mShooter, m_robotContainer.mShooter::getRollerRPM,
+          (double rpm)->m_robotContainer.mShooter.setDesiredRollerRPM(rpm), m_robotContainer.mShooter::stopMotors,
+          5, ShooterConstants.PHYSICAL_MAX_RPM_ROLLER);
+          break;
+      case PID_FLYWHEEL:
+        m_autonomousCommand = new SubsystemPIDTuning(m_robotContainer.mShooter.setTunablePIDFlywheel, m_robotContainer.mShooter.setFlywheelRPM(), null, null, kDefaultPeriod, kDefaultPeriod)
     }
-  }
 
+    
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
    * that you want ran during disabled, autonomous, teleoperated and test.

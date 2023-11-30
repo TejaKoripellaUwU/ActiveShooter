@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Util.TBHController;
 import frc.robot.constants.ShooterConstants;
@@ -55,7 +53,15 @@ public class ShooterTBH extends ShooterBase {
   }
 
   public void runSpeedControl(){
-    mFlyWheelMotor.set(mMotorControl, mFlywheelController.calculate(getFlywheelRPM()));
-    mRollerMotor.set(mMotorControl, mRollerController.calculate(getRollerRPM()));
+    switch(mControlSignal){
+      case VELOCITY_VOLTAGE:
+        mFlyWheelMotor.setControl(mVelocityVoltage.withVelocity(velocityToNativeUnits(mFlywheelSetpoint,ShooterType.FLYWHEEL)).withSlot(0));
+        mRollerMotor.setControl(mVelocityVoltage.withVelocity(velocityToNativeUnits(mRollerSetpoint,ShooterType.FLYWHEEL)).withSlot(0));
+        break;
+      case COAST_OUT:
+        mFlyWheelMotor.setControl(mCoastOut);
+        mRollerMotor.setControl(mCoastOut);
+        break;
+    }
   }
 }

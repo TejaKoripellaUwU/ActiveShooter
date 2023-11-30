@@ -4,14 +4,7 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
-import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-
-import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.Util.PIDConstants;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterIntegratedPID extends ShooterBase {
@@ -22,38 +15,23 @@ public class ShooterIntegratedPID extends ShooterBase {
   }
   protected void setOnboardFeedbackConstants(){
     //All PID constants need to be tuned
-
-    mRollerConfig.slot1.kP = 2;//0.2
-    mRollerConfig.slot1.kI = 0.0;
-    mRollerConfig.slot1.kD = 0.05;//0.05
-    mRollerConfig.slot1.kF = 0.01;//0.01
-    mRollerConfig.slot1.allowableClosedloopError = 0;
-
-    mFlywheelConfig.slot1.kP = 2;
-    mFlywheelConfig.slot1.kI = 0.0;
-    mFlywheelConfig.slot1.kD = 0.05;
-    mFlywheelConfig.slot1.kF = 0.01;
-    mFlywheelConfig.slot1.allowableClosedloopError = 0;
-   
-    mFlyWheelMotor.configAllSettings(mFlywheelConfig);
-    mRollerMotor.configAllSettings(mRollerConfig);
-    mFlyWheelMotor.selectProfileSlot(1, 0);
-    mRollerMotor.selectProfileSlot(1, 0);
+    mFlywheelConfigurator.apply(ShooterConstants.FLYWHEEL_PID.toTalonConfiguration());
+    mRollerConfigurator.apply(ShooterConstants.ROLLER_PID.toTalonConfiguration());
   }
   public void setDesiredFlywheelRPM(double rpm){
-    mMotorControl = TalonFXControlMode.Velocity;
+    mControlSignal = TalonControlType.VELOCITY_VOLTAGE;
     mFlywheelSetpoint = rpm;
   }
   public void setDesiredRollerRPM(double rpm){
-    mMotorControl = TalonFXControlMode.Velocity;
+    mControlSignal = TalonControlType.VELOCITY_VOLTAGE;
     mRollerSetpoint = rpm;
    }
   public void changeFlywheelRPM(double increment){
-    mMotorControl = TalonFXControlMode.Velocity;
+    mControlSignal = TalonControlType.VELOCITY_VOLTAGE;
     mFlywheelSetpoint+=increment;
   }
   public void changeRollerRPM(double increment){
-    mMotorControl = TalonFXControlMode.Velocity;
+    mControlSignal = TalonControlType.VELOCITY_VOLTAGE;
     mRollerSetpoint+=increment;
   }
 
@@ -64,9 +42,26 @@ public class ShooterIntegratedPID extends ShooterBase {
     return Math.abs(Math.abs(mRollerSetpoint)-Math.abs(getRollerRPM())) > ShooterConstants.FLYWHEEL_SP_DEADZONE;
   }
   public void runSpeedControl(){
-    mFlyWheelMotor.set(mMotorControl, velocityToNativeUnits(mFlywheelSetpoint,ShooterType.FLYWHEEL));
-    mRollerMotor.set(mMotorControl, velocityToNativeUnits(mRollerSetpoint,ShooterType.ROLLER));
+    switch(mControlSignal){
+      case VELOCITY_VOLTAGE:
+        mFlyWheelMotor.setControl(mVelocityVoltage.withVelocity(velocityToNativeUnits(mFlywheelSetpoint,ShooterType.FLYWHEEL)).withSlot(0));
+        mRollerMotor.setControl(mVelocityVoltage.withVelocity(velocityToNativeUnits(mRollerSetpoint,ShooterType.FLYWHEEL)).withSlot(0));
+        break;
+      case COAST_OUT:
+        mFlyWheelMotor.setControl(mCoastOut);
+        mRollerMotor.setControl(mCoastOut);
+        break;
+    }
   }
+
+  public void setTunablePIDFlywheel(PIDConstants pidFlywheel){
+    mFlywheelConfigurator.apply(pidFlywheel.toTalonConfiguration());
+  }
+
+  public void setTunablePIDRoller(PIDConstants pidRoller){
+    mRollerConfigurator.apply(pidRoller.toTalonConfiguration());
+  }
+
   public void writeControllerDebugData(){
     //since we have no controller no debug data is provided
   }

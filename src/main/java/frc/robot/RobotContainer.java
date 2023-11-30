@@ -15,8 +15,12 @@ import frc.robot.subsystems.ShooterIntegratedPID;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
+
 public class RobotContainer {
-  ShooterIntegratedPID mShooter = new ShooterIntegratedPID();
+  public ShooterIntegratedPID mShooter = new ShooterIntegratedPID();
+
+}
+
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
