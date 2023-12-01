@@ -26,6 +26,14 @@ public class ShooterIntegratedPID extends ShooterBase {
     mControlSignal = TalonControlType.VELOCITY_VOLTAGE;
     mRollerSetpoint = rpm;
    }
+   public void setFlywheelVelRaw(double rps){
+    mControlSignal = TalonControlType.VELOCITY_VOLTAGE;
+    mFlywheelSetpoint = nativeUnitsToVelocity(rps,ShooterType.FLYWHEEL);
+   }
+   public void setRollerVelRaw(double rps){
+    mControlSignal = TalonControlType.VELOCITY_VOLTAGE;
+    mRollerSetpoint = nativeUnitsToVelocity(rps,ShooterType.ROLLER);
+   }
   public void changeFlywheelRPM(double increment){
     mControlSignal = TalonControlType.VELOCITY_VOLTAGE;
     mFlywheelSetpoint+=increment;
@@ -42,10 +50,11 @@ public class ShooterIntegratedPID extends ShooterBase {
     return Math.abs(Math.abs(mRollerSetpoint)-Math.abs(getRollerRPM())) > ShooterConstants.FLYWHEEL_SP_DEADZONE;
   }
   public void runSpeedControl(){
+    mFlyWheelMotor.setControl(mVelocityVoltage.withVelocity(velocityToNativeUnits(mFlywheelSetpoint,ShooterType.FLYWHEEL)));
+    mRollerMotor.setControl(mVelocityVoltage.withVelocity(velocityToNativeUnits(mRollerSetpoint,ShooterType.FLYWHEEL)));
     switch(mControlSignal){
       case VELOCITY_VOLTAGE:
-        mFlyWheelMotor.setControl(mVelocityVoltage.withVelocity(velocityToNativeUnits(mFlywheelSetpoint,ShooterType.FLYWHEEL)).withSlot(0));
-        mRollerMotor.setControl(mVelocityVoltage.withVelocity(velocityToNativeUnits(mRollerSetpoint,ShooterType.FLYWHEEL)).withSlot(0));
+
         break;
       case COAST_OUT:
         mFlyWheelMotor.setControl(mCoastOut);

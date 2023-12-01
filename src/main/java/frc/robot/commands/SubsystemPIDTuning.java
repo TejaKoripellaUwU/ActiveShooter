@@ -9,6 +9,7 @@ import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.networktables.NetworkTableListener;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -48,14 +49,13 @@ public class SubsystemPIDTuning extends CommandBase {
   public void execute() {
     double increment = 0;
 
-    if (Input.getLeftBumper()) {
-      mToggled = !mToggled;
-    }
-
-    if (mToggled) {
-      mSetPointConsumer.accept(mSetPoint);
-    }
-    SmartDashboard.putBoolean("toggled", mToggled);
+    // if (Input.getLeftBumper()) {
+    //   mToggled = !mToggled;
+    // }
+    // if (mToggled) {
+    //   mSetPointConsumer.accept(mSetPoint);
+    // }
+    mToggled = SmartDashboard.getBoolean("toggled", mToggled);
     mPID.mKP = SmartDashboard.getNumber("kP", 0);
     mPID.mKI = SmartDashboard.getNumber("kI", 0);
     mPID.mKD = SmartDashboard.getNumber("kD", 0);
@@ -65,7 +65,9 @@ public class SubsystemPIDTuning extends CommandBase {
     mPIDConsumer.accept(mPID);
 
     increment = SmartDashboard.getNumber("increment", 2);
-    mSetPoint = SmartDashboard.getNumber("mSetPoint", 0);
+    mSetPoint = SmartDashboard.getNumber("SetPoint", 0);
+    SmartDashboard.putBoolean("toggled", mToggled);
+
 
     if (Input.getPOV() == POV.DPADUP.mAngle) {
       mSetPoint += increment;
@@ -73,7 +75,6 @@ public class SubsystemPIDTuning extends CommandBase {
       mSetPoint -= increment;
     }
 
-    SmartDashboard.putNumber("setpoint", mSetPoint);
     SmartDashboard.putNumber("measurement", mMeasurementSupplier.getAsDouble());
     SmartDashboard.updateValues();
   }

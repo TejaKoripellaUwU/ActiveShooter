@@ -19,7 +19,6 @@ import frc.robot.subsystems.ShooterIntegratedPID;
 public class RobotContainer {
   public ShooterIntegratedPID mShooter = new ShooterIntegratedPID();
 
-}
 
 
 

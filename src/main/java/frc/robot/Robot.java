@@ -5,8 +5,12 @@
 package frc.robot;
 
 
+import frc.robot.Util.PIDConstants;
 import frc.robot.commands.SubsystemCharacterization;
 import frc.robot.commands.SubsystemPIDTuning;
+
+import java.util.function.Consumer;
+
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -60,12 +64,20 @@ public class Robot extends TimedRobot {
         m_autonomousCommand = new SubsystemCharacterization(m_robotContainer.mShooter, m_robotContainer.mShooter::getRollerRPM,
           (double rpm)->m_robotContainer.mShooter.setDesiredRollerRPM(rpm), m_robotContainer.mShooter::stopMotors,
           5, ShooterConstants.PHYSICAL_MAX_RPM_ROLLER);
-          break;
+        break;
       case PID_FLYWHEEL:
-        m_autonomousCommand = new SubsystemPIDTuning(m_robotContainer.mShooter.setTunablePIDFlywheel, m_robotContainer.mShooter.setFlywheelRPM(), null, null, kDefaultPeriod, kDefaultPeriod)
+        m_autonomousCommand = new SubsystemPIDTuning((PIDConstants pid) -> m_robotContainer.mShooter.setTunablePIDFlywheel(pid),
+          m_robotContainer.mShooter::setDesiredFlywheelRPM,m_robotContainer.mShooter::getFlywheelRPM, m_robotContainer.mShooter);
+        break;
+      case PID_ROLLER:
+        m_autonomousCommand = new SubsystemPIDTuning((PIDConstants pid) -> m_robotContainer.mShooter.setTunablePIDRoller(pid),
+          m_robotContainer.mShooter::setDesiredRollerRPM,m_robotContainer.mShooter::getRollerRPM, m_robotContainer.mShooter);
+        break;
+      case DEFAULT_EXECUTION:
+        m_autonomousCommand = null;
+        break;
     }
-
-    
+  }
   /**
    * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
    * that you want ran during disabled, autonomous, teleoperated and test.

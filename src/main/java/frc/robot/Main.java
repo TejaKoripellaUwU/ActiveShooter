@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.function.Consumer;
+
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -12,7 +14,11 @@ import edu.wpi.first.wpilibj.RobotBase;
  * call.
  */
 public final class Main {
-  private Main() {}
+  private Main() {
+    Consumer<Integer> method = (Integer n)->{System.out.println(n);};
+
+    
+  }
 
   /**
    * Main initialization function. Do not perform any initialization here.

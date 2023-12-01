@@ -8,6 +8,6 @@ package frc.robot.constants;
 public class GameConstants {
     public static final double BALL_RADIUS_CM = 20;
     public static final boolean DEBUG_MODE = true;
-    public static final SavedCommands CUR_MODE = SavedCommands.PID_FLYWHEEL;
+    public static final SavedCommands CUR_MODE = SavedCommands.DEFAULT_EXECUTION;
 
 }

@@ -28,6 +28,16 @@ public class ShooterTBH extends ShooterBase {
     mRollerSetpoint = rpm;
     mFlywheelController.spinUp(mRollerSetpoint);
   }
+  public void setFlywheelVelRaw(double rps){
+    mControlSignal = TalonControlType.VELOCITY_VOLTAGE;
+    mFlywheelSetpoint = nativeUnitsToVelocity(rps,ShooterType.FLYWHEEL);
+    mFlywheelController.spinUp(mFlywheelSetpoint);
+  }
+   public void setRollerVelRaw(double rps){
+    mControlSignal = TalonControlType.VELOCITY_VOLTAGE;
+    mRollerSetpoint = nativeUnitsToVelocity(rps,ShooterType.ROLLER);
+    mRollerController.spinUp(mRollerSetpoint);
+  }
   public void changeFlywheelRPM(double increment){
     mFlywheelSetpoint+=increment;
     mFlywheelController.spinUp(mFlywheelSetpoint);

@@ -81,9 +81,16 @@ abstract class ShooterBase extends SubsystemBase {
   protected abstract void setOnboardFeedbackConstants();
 
   abstract void runSpeedControl();
-
+  /**
+   * Set the desired velocity of the roller in nRPM
+   * @return
+   */
   abstract void setDesiredFlywheelRPM(double rpm);
 
+  /**
+   * Set the desired velocity of the roller in nRPM
+   * @return
+   */
   abstract void setDesiredRollerRPM(double rpm);
 
   abstract void changeFlywheelRPM(double increment);
@@ -91,6 +98,18 @@ abstract class ShooterBase extends SubsystemBase {
   abstract boolean atDesiredFlywheelRPM();
 
   abstract boolean atDesiredRollerRPM();
+  
+  /**
+   * Set the velocity of the flywheel MOTOR in native units (Rotations/Sec)
+   * @return
+   */
+  public abstract void setFlywheelVelRaw(double rps);
+
+  /**
+   * Set the velocity of the roller MOTOR in native units (Rotations/Sec)
+   * @return
+   */
+  public abstract void setRollerVelRaw(double rps);
 
   public void setMotorRaw(){
     switch(mControlSignal){
@@ -109,6 +128,16 @@ abstract class ShooterBase extends SubsystemBase {
 
   public double getRollerRPM(){
     return nativeUnitsToVelocity(mRollerMotor.getRotorVelocity().getValue(),ShooterType.ROLLER);
+  }
+  /**
+   * @return roller motor velocity in rotations per second of the MOTOR without gear ratio
+   */
+  public double getRollerVelRaw(){
+    return mRollerMotor.getRotorVelocity().getValue();
+  }
+
+  public double getFlywheelVelRaw(){
+    return mFlyWheelMotor.getRotorVelocity().getValue();
   }
 
   public double getFlywheelRPM(){
