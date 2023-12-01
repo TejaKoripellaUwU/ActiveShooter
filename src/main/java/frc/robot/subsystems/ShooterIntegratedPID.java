@@ -60,6 +60,8 @@ public class ShooterIntegratedPID extends ShooterBase {
         mFlyWheelMotor.setControl(mCoastOut);
         mRollerMotor.setControl(mCoastOut);
         break;
+      case VOLTAGE_OUT:
+        break;
     }
   }
 

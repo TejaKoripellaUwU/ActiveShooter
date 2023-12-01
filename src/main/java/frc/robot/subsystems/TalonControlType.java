@@ -7,6 +7,6 @@ package frc.robot.subsystems;
 /** Add your docs here. */
 public enum TalonControlType {
     VELOCITY_VOLTAGE,
-    COAST_OUT;
-
+    COAST_OUT,
+    VOLTAGE_OUT;
 }

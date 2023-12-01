@@ -21,28 +21,32 @@ public class ShooterTBH extends ShooterBase {
   }
 
   public void setDesiredFlywheelRPM(double rpm){
+    mControlSignal = TalonControlType.VOLTAGE_OUT;
     mFlywheelSetpoint = rpm;
     mFlywheelController.spinUp(mFlywheelSetpoint);
   }
   public void setDesiredRollerRPM(double rpm){
+    mControlSignal = TalonControlType.VOLTAGE_OUT;
     mRollerSetpoint = rpm;
     mFlywheelController.spinUp(mRollerSetpoint);
   }
   public void setFlywheelVelRaw(double rps){
-    mControlSignal = TalonControlType.VELOCITY_VOLTAGE;
+    mControlSignal = TalonControlType.VOLTAGE_OUT;
     mFlywheelSetpoint = nativeUnitsToVelocity(rps,ShooterType.FLYWHEEL);
     mFlywheelController.spinUp(mFlywheelSetpoint);
   }
    public void setRollerVelRaw(double rps){
-    mControlSignal = TalonControlType.VELOCITY_VOLTAGE;
+    mControlSignal = TalonControlType.VOLTAGE_OUT;
     mRollerSetpoint = nativeUnitsToVelocity(rps,ShooterType.ROLLER);
     mRollerController.spinUp(mRollerSetpoint);
   }
   public void changeFlywheelRPM(double increment){
+    mControlSignal = TalonControlType.VOLTAGE_OUT;
     mFlywheelSetpoint+=increment;
     mFlywheelController.spinUp(mFlywheelSetpoint);
   }
   public void changeRollerRPM(double increment){
+    mControlSignal = TalonControlType.VOLTAGE_OUT;
     mRollerSetpoint+=increment;
     mRollerController.spinUp(mRollerSetpoint);
   }
@@ -65,12 +69,14 @@ public class ShooterTBH extends ShooterBase {
   public void runSpeedControl(){
     switch(mControlSignal){
       case VELOCITY_VOLTAGE:
-        mFlyWheelMotor.setControl(mVelocityVoltage.withVelocity(velocityToNativeUnits(mFlywheelSetpoint,ShooterType.FLYWHEEL)).withSlot(0));
-        mRollerMotor.setControl(mVelocityVoltage.withVelocity(velocityToNativeUnits(mRollerSetpoint,ShooterType.FLYWHEEL)).withSlot(0));
         break;
       case COAST_OUT:
         mFlyWheelMotor.setControl(mCoastOut);
         mRollerMotor.setControl(mCoastOut);
+        break;
+      case VOLTAGE_OUT:
+        mFlyWheelMotor.setControl(mVoltageOut.withOutput(velocityToNativeUnits(mFlywheelController.calculate(mFlywheelSetpoint),ShooterType.FLYWHEEL)));
+        mRollerMotor.setControl(mVoltageOut.withOutput(velocityToNativeUnits(mRollerController.calculate(mRollerSetpoint),ShooterType.ROLLER)));
         break;
     }
   }

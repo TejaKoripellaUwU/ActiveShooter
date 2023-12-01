@@ -14,6 +14,7 @@ import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
@@ -62,6 +63,9 @@ abstract class ShooterBase extends SubsystemBase {
   .withSlot(0);
 
   protected final CoastOut mCoastOut = new CoastOut()
+  .withUpdateFreqHz(50);
+
+  protected final VoltageOut mVoltageOut = new VoltageOut(0)
   .withUpdateFreqHz(50);
 
 
