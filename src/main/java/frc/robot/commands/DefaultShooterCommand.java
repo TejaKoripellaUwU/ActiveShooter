@@ -28,25 +28,18 @@ public class DefaultShooterCommand extends CommandBase {
   @Override
   public void execute() {
     if (Input.getAPressed()){
-      System.out.println("A pressed");
-
       mShooter.setToShooterState(ShooterState.READY);
     }
     if (Input.getBPressed()){
-      System.out.println("B pressed");
-
       mToggleCoast = !mToggleCoast;
       if (mToggleCoast){
         mShooter.stopMotors();
       }
     }
     if (Input.getYPressed()){
-      System.out.println("Y pressed");
       mShooter.setToShooterState(ShooterState.STATE_1);
     }
     if (Input.getXPressed()){
-      System.out.println("X pressed");
-
       mShooter.setToShooterState(ShooterState.STATE_2);
     }
     if (Math.abs(Input.getLeftJoyY())>InputConstants.LSTICKDEADZONE){

@@ -15,8 +15,6 @@ import edu.wpi.first.wpilibj.RobotBase;
  */
 public final class Main {
   private Main() {
-    Consumer<Integer> method = (Integer n)->{System.out.println(n);};
-
     
   }
 

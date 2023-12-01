@@ -115,8 +115,13 @@ abstract class ShooterBase extends SubsystemBase {
     switch(mControlSignal){
       case VELOCITY_VOLTAGE:
         mFlyWheelMotor.setControl(mVelocityVoltage);
+        break;
       case COAST_OUT:
         mFlyWheelMotor.setControl(mCoastOut);
+        break;
+      default:
+        mFlyWheelMotor.setControl(mVelocityVoltage);
+        break;
     }
   }
 

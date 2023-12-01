@@ -61,14 +61,11 @@ public class ShooterConstants {
     public static final int ROLLER_TALON_ID = 7;
     
     public static final PIDConstants FLYWHEEL_PID = 
-    new PIDConstants(48.0469,0.0,0.0012,0,0);
+    new PIDConstants(3,1.0,0.02,0,0.17);
   
     public static final PIDConstants ROLLER_PID = 
-    new PIDConstants(48.0469,0.0,0.0012,0,0);
-
+    new PIDConstants(3,1.0,0.02,0,0.17);
     public static PIDConstants TUNABLE_FLYWHEEL_PID = 
-    new PIDConstants(48.0469,0.0,0.0012,0,0);
-  
+    new PIDConstants(3,1.0,0.02,0,0.17);  
     public static PIDConstants TUNABLE_ROLLER_PID = 
-    new PIDConstants(48.0469,0.0,0.0012,0,0);
-}
+    new PIDConstants(3,1.0,0.02,0,0.17);}

@@ -40,8 +40,13 @@ public class SubsystemPIDTuning extends CommandBase {
     SmartDashboard.putNumber("kP", 0);
     SmartDashboard.putNumber("kI", 0);
     SmartDashboard.putNumber("kD", 0);
+    SmartDashboard.putNumber("kS", 0);
+    SmartDashboard.putNumber("kV", 0);
     SmartDashboard.putNumber("increment", 2);
+    SmartDashboard.putNumber("error",mSetPoint-mMeasurementSupplier.getAsDouble());
     SmartDashboard.putNumber("setpoint", mSetPoint);
+    SmartDashboard.putBoolean("toggled", mToggled);
+
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -49,26 +54,25 @@ public class SubsystemPIDTuning extends CommandBase {
   public void execute() {
     double increment = 0;
 
-    // if (Input.getLeftBumper()) {
-    //   mToggled = !mToggled;
-    // }
-    // if (mToggled) {
-    //   mSetPointConsumer.accept(mSetPoint);
-    // }
+    if (Input.getLeftBumper()) {
+      mToggled = !mToggled;
+    }
+
     mToggled = SmartDashboard.getBoolean("toggled", mToggled);
     mPID.mKP = SmartDashboard.getNumber("kP", 0);
     mPID.mKI = SmartDashboard.getNumber("kI", 0);
     mPID.mKD = SmartDashboard.getNumber("kD", 0);
     mPID.mKS = SmartDashboard.getNumber("kS", 0);
     mPID.mKV = SmartDashboard.getNumber("kV", 0);
+    increment = SmartDashboard.getNumber("increment", 2);
 
     mPIDConsumer.accept(mPID);
 
-    increment = SmartDashboard.getNumber("increment", 2);
-    mSetPoint = SmartDashboard.getNumber("SetPoint", 0);
-    SmartDashboard.putBoolean("toggled", mToggled);
-
-
+    if(mToggled){
+      mSetPoint = SmartDashboard.getNumber("setpoint", 0);
+      mSetPointConsumer.accept(mSetPoint);
+    }
+    
     if (Input.getPOV() == POV.DPADUP.mAngle) {
       mSetPoint += increment;
     } else if (Input.getPOV() == POV.DPADDOWN.mAngle) {
@@ -76,6 +80,8 @@ public class SubsystemPIDTuning extends CommandBase {
     }
 
     SmartDashboard.putNumber("measurement", mMeasurementSupplier.getAsDouble());
+    SmartDashboard.putNumber("error", mSetPoint-mMeasurementSupplier.getAsDouble());
+
     SmartDashboard.updateValues();
   }
 

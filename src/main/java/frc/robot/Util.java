@@ -28,7 +28,6 @@ public class Util {
         public double mContinuousInputMin;
         public boolean mIsContinuousInput;
 
-
         public PIDConstants(double kP, double kI, double kD, double kV, double kS, double continuousInputMax, double continuousInputMin){
             mKP = kP;
             mKI = kI;
@@ -41,15 +40,15 @@ public class Util {
         }
 
         public PIDConstants(double kP, double kI, double kD, double kS, double kV){
-            new PIDConstants(kP, kI, kD, kS, kV,0,0);
+            this(kP, kI, kD, kV, kS,0,0);
             mIsContinuousInput = false;
         }
 
         public PIDConstants(double kP, double kI, double kD){
-            new PIDConstants(kP, kI, kD, 0, 0,0,0);
+            this(kP, kI, kD, 0, 0,0,0);
             mIsContinuousInput = false;
         }
-        
+   
 
         public PIDController toWPIController(){
             PIDController pid = new PIDController(mKP, mKI, mKD);
@@ -59,9 +58,9 @@ public class Util {
 
         public TalonFXConfiguration toTalonConfiguration(){
             TalonFXConfiguration config = new TalonFXConfiguration();
-            config.Slot0.kP = mKP;//0.2
+            config.Slot0.kP = mKP;
             config.Slot0.kI = mKI;
-            config.Slot0.kD = mKD;//0.05
+            config.Slot0.kD = mKD;
             config.Slot0.kV = mKV;
             config.Slot0.kS = mKS;
             config.ClosedLoopGeneral.ContinuousWrap = mIsContinuousInput;
