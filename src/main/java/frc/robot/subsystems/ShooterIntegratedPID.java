@@ -4,18 +4,22 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
+
 import frc.robot.Util.PIDConstants;
 import frc.robot.constants.ShooterConstants;
 
 public class ShooterIntegratedPID extends ShooterBase {
   /** Creates a new Shooter. */
-
   public ShooterIntegratedPID() {
     super();
   }
+
   protected void setOnboardFeedbackConstants(){
     //All PID constants need to be tuned
+    MotionMagicConfigs magicConfigs = new MotionMagicConfigs();
+    magicConfigs.MotionMagicAcceleration = 108.33/3;
+    magicConfigs.MotionMagicAcceleration = 2*108.33/1.5;
     mFlywheelConfigurator.apply(ShooterConstants.FLYWHEEL_PID.toTalonConfiguration());
     mRollerConfigurator.apply(ShooterConstants.ROLLER_PID.toTalonConfiguration());
   }
@@ -60,6 +64,10 @@ public class ShooterIntegratedPID extends ShooterBase {
         mFlyWheelMotor.setControl(mCoastOut);
         mRollerMotor.setControl(mCoastOut);
         break;
+      // case MOTION_MAGIC_VOLTAGE:
+      //   mFlyWheelMotor.setControl(mMotionMagivVelVoltageOut.withVelocity(velocityToNativeUnits(mFlywheelSetpoint,ShooterType.FLYWHEEL)));
+      //   mRollerMotor.setControl(mMotionMagivVelVoltageOut.withVelocity(velocityToNativeUnits(mRollerSetpoint,ShooterType.FLYWHEEL)));
+      //   break;
       case VOLTAGE_OUT:
         break;
     }

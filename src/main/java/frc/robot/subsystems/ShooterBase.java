@@ -4,33 +4,23 @@
 
 package frc.robot.subsystems;
 
-import org.ejml.simple.SimpleMatrix;
-
-import com.ctre.phoenix6.configs.ClosedLoopRampsConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.CoastOut;
-import com.ctre.phoenix6.controls.ControlRequest;
-import com.ctre.phoenix6.controls.NeutralOut;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
-import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Input;
-import frc.robot.Robot;
 import frc.robot.Util;
 import frc.robot.constants.GameConstants;
 import frc.robot.constants.ShooterConstants;
@@ -44,8 +34,8 @@ abstract class ShooterBase extends SubsystemBase {
   protected double mRollerSetpoint = ShooterConstants.ShooterState.HOME.mRollerRPM;
   protected double mFlywheelSetpoint = ShooterConstants.ShooterState.HOME.mFlyWheelRPM;
 
-  public final FlywheelSim mFlywheelSim = new FlywheelSim(DCMotor.getFalcon500(1),1/ShooterConstants.MOTOR_TO_FLWHEEL_GEAR_RATIO, 0.00610837488,null);
-  public final FlywheelSim mRollerSim = new FlywheelSim(DCMotor.getFalcon500(1),1/ShooterConstants.MOTOR_TO_FLWHEEL_GEAR_RATIO, 0.00610837488,null);
+  public final FlywheelSim mFlywheelSim = new FlywheelSim(DCMotor.getFalcon500(1),ShooterType.FLYWHEEL.mGearRatioToSensor,ShooterConstants.FLYWHEEL_MOI_KG_MPS,null);
+  public final FlywheelSim mRollerSim = new FlywheelSim(DCMotor.getFalcon500(1),1/ShooterType.ROLLER.mGearRatioToSensor, 0.00610837488,null);
 
   protected final TalonFXSimState mRollerFalconSim = mRollerMotor.getSimState();
   protected final TalonFXSimState mFlywheelFalconSim = mFlyWheelMotor.getSimState();
@@ -63,11 +53,10 @@ abstract class ShooterBase extends SubsystemBase {
   .withSlot(0);
 
   protected final CoastOut mCoastOut = new CoastOut()
-  .withUpdateFreqHz(50);
+  .withUpdateFreqHz(100);
 
   protected final VoltageOut mVoltageOut = new VoltageOut(0)
-  .withUpdateFreqHz(50);
-
+  .withUpdateFreqHz(100);
 
   protected ShooterBase() {
     mRollerMotor.getConfigurator().apply(new TalonFXConfiguration());
@@ -166,6 +155,8 @@ abstract class ShooterBase extends SubsystemBase {
 
     SmartDashboard.putNumber("PID output", mFlyWheelMotor.getClosedLoopOutput().getValue());
     SmartDashboard.putNumber("PID Error", mFlyWheelMotor.getClosedLoopError().getValue());
+
+    SmartDashboard.putNumber("MOI",ShooterConstants.FLYWHEEL_MOI_KG_MPS);
     
     SmartDashboard.updateValues();
    
@@ -190,10 +181,9 @@ abstract class ShooterBase extends SubsystemBase {
     runSpeedControl();
   }
 
-  protected int velocityToNativeUnits(double velocityRPM, ShooterType mode){
+  protected double velocityToNativeUnits(double velocityRPM, ShooterType mode){
     double motorRotationsPerMin = velocityRPM * mode.mGearRatioToSensor;
-    double motorRotationsPerSec = motorRotationsPerMin / 60;
-    return (int)(motorRotationsPerSec);
+    return motorRotationsPerMin/60;
   }
 
   protected double nativeUnitsToVelocity(double rotationsPerSecond, ShooterType mode){

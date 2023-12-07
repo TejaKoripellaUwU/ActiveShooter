@@ -14,7 +14,7 @@ public class ShooterConstants {
     public enum ShooterState{
         READY(1000,1000),
         STATE_1(2000,1000),
-        STATE_2(200,50),
+        STATE_2(4000,2000),
         HOME(0,0);
         public final double mFlyWheelRPM;
         public final double mRollerRPM;
@@ -52,8 +52,18 @@ public class ShooterConstants {
     public static final Translation3d FLYWHEEL_LOC_M = new Translation3d(-0.5, 0, 0.4);
     public static final Translation3d ROLLER_LOC_M = new Translation3d(-0.8,0,0.5);
 
-    public static final double FLYWHEEL_RADIUS_M = Units.inchesToMeters(6);
-    public static final double ROLLER_RADIUS_M = Units.inchesToMeters(6);
+    public static final double FLYWHEEL_RADIUS_M = Units.inchesToMeters(3);
+    public static final double ROLLER_RADIUS_M = Units.inchesToMeters(3);
+
+    public static final double FLYWHEEL_WEIGHT_KG = Units.lbsToKilograms(0.58);
+    public static final double ROLLER_WEIGHT_KG = Units.lbsToKilograms(0.58);
+
+    public static final double FLYWHEEL_MOI_CONSTANT = 1.0/2;
+    public static final double ROLLER_MOI_CONSTANT = 1.0/2;
+
+    public static final double FLYWHEEL_MOI_KG_MPS = FLYWHEEL_MOI_CONSTANT*FLYWHEEL_WEIGHT_KG*Math.pow(FLYWHEEL_RADIUS_M,2);
+    public static final double ROLLER_MOI_KG_MPS = ROLLER_MOI_CONSTANT*ROLLER_WEIGHT_KG*Math.pow(ROLLER_RADIUS_M,2);
+
     public static final double FLYWHEEL_SP_DEADZONE = 0.05;
     public static final double ROLLER_SP_DEADZONE = 0.05;
     

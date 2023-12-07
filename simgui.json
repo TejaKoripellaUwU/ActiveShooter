@@ -31,6 +31,7 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/LiveWindow/ShooterIntegratedPID": "Subsystem",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/LiveWindow/Ungrouped/Talon FX (Pro) [7]": "Motor Controller",
       "/LiveWindow/Ungrouped/Talon FX (Pro) [8]": "Motor Controller",
