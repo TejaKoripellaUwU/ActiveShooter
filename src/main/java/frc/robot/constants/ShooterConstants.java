@@ -3,8 +3,6 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.constants;
-import frc.robot.constants.GameConstants;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import frc.robot.Util.PIDConstants;
@@ -12,9 +10,9 @@ import frc.robot.Util.PIDConstants;
 /** Add your docs here. */
 public class ShooterConstants {
     public enum ShooterState{
-        READY(1000,1000),
-        STATE_1(2000,1000),
-        STATE_2(4000,2000),
+        READY(1000,0),
+        STATE_1(2000,0),
+        STATE_2(4000,0),
         HOME(0,0);
         public final double mFlyWheelRPM;
         public final double mRollerRPM;
@@ -30,7 +28,7 @@ public class ShooterConstants {
     //2048 sensor units/ 100 ms  -> RPM
     public static final double ENCODER_VEL_TO_MOTOR_RPM = 600/ENCODER_TICKS_PER_ROTATION; 
     public static final double MOTOR_TO_FLWHEEL_GEAR_RATIO = 1;
-    public static final double MOTOR_TO_ROLLER_GEAR_RATIO = 5.0/3;
+    public static final double MOTOR_TO_ROLLER_GEAR_RATIO = 1;
 
     public static final double ENCODER_VEL_TO_FLYWHEEL_RPM = ENCODER_VEL_TO_MOTOR_RPM * MOTOR_TO_FLWHEEL_GEAR_RATIO;
     public static final double ENCODER_VEL_TO_ROLLER_RPM = ENCODER_VEL_TO_MOTOR_RPM * MOTOR_TO_ROLLER_GEAR_RATIO;
@@ -52,11 +50,11 @@ public class ShooterConstants {
     public static final Translation3d FLYWHEEL_LOC_M = new Translation3d(-0.5, 0, 0.4);
     public static final Translation3d ROLLER_LOC_M = new Translation3d(-0.8,0,0.5);
 
-    public static final double FLYWHEEL_RADIUS_M = Units.inchesToMeters(3);
-    public static final double ROLLER_RADIUS_M = Units.inchesToMeters(3);
+    public static final double FLYWHEEL_RADIUS_M = Units.inchesToMeters(2);
+    public static final double ROLLER_RADIUS_M = Units.inchesToMeters(2);
 
-    public static final double FLYWHEEL_WEIGHT_KG = Units.lbsToKilograms(0.58);
-    public static final double ROLLER_WEIGHT_KG = Units.lbsToKilograms(0.58);
+    public static final double FLYWHEEL_WEIGHT_KG = 0.150*4 + 0.493*2;
+    public static final double ROLLER_WEIGHT_KG = 0.150*4 + 0.493*2;
 
     public static final double FLYWHEEL_MOI_CONSTANT = 1.0/2;
     public static final double ROLLER_MOI_CONSTANT = 1.0/2;
@@ -71,10 +69,10 @@ public class ShooterConstants {
     public static final int ROLLER_TALON_ID = 7;
     
     public static final PIDConstants FLYWHEEL_PID = 
-    new PIDConstants(3,1.0,0.02,0,0.17);
-  
+    new PIDConstants(1,0,0.0,0,0);
     public static final PIDConstants ROLLER_PID = 
-    new PIDConstants(3,1.0,0.02,0,0.17);
+    new PIDConstants(1,0,0,0,0);
+
     public static PIDConstants TUNABLE_FLYWHEEL_PID = 
     new PIDConstants(3,1.0,0.02,0,0.17);  
     public static PIDConstants TUNABLE_ROLLER_PID = 

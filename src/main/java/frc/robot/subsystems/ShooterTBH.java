@@ -78,6 +78,8 @@ public class ShooterTBH extends ShooterBase {
         mFlyWheelMotor.setControl(mVoltageOut.withOutput(velocityToNativeUnits(mFlywheelController.calculate(mFlywheelSetpoint),ShooterType.FLYWHEEL)));
         mRollerMotor.setControl(mVoltageOut.withOutput(velocityToNativeUnits(mRollerController.calculate(mRollerSetpoint),ShooterType.ROLLER)));
         break;
+      case DUTY_CYCLE_VEL:
+        break;
     }
   }
 }

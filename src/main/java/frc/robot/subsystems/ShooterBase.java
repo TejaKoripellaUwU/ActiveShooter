@@ -7,7 +7,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.CoastOut;
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -35,7 +35,7 @@ abstract class ShooterBase extends SubsystemBase {
   protected double mFlywheelSetpoint = ShooterConstants.ShooterState.HOME.mFlyWheelRPM;
 
   public final FlywheelSim mFlywheelSim = new FlywheelSim(DCMotor.getFalcon500(1),ShooterType.FLYWHEEL.mGearRatioToSensor,ShooterConstants.FLYWHEEL_MOI_KG_MPS,null);
-  public final FlywheelSim mRollerSim = new FlywheelSim(DCMotor.getFalcon500(1),1/ShooterType.ROLLER.mGearRatioToSensor, 0.00610837488,null);
+  public final FlywheelSim mRollerSim = new FlywheelSim(DCMotor.getFalcon500(1),1/ShooterType.ROLLER.mGearRatioToSensor, ShooterConstants.ROLLER_MOI_KG_MPS,null);
 
   protected final TalonFXSimState mRollerFalconSim = mRollerMotor.getSimState();
   protected final TalonFXSimState mFlywheelFalconSim = mFlyWheelMotor.getSimState();
@@ -49,7 +49,9 @@ abstract class ShooterBase extends SubsystemBase {
   protected TalonControlType mControlSignal = TalonControlType.VELOCITY_VOLTAGE;
   
   protected final VelocityVoltage mVelocityVoltage = new VelocityVoltage(0)
-  .withUpdateFreqHz(50)
+  .withSlot(0);
+
+  protected final VelocityDutyCycle mDutyCycle = new VelocityDutyCycle(0)
   .withSlot(0);
 
   protected final CoastOut mCoastOut = new CoastOut()
@@ -144,22 +146,22 @@ abstract class ShooterBase extends SubsystemBase {
   public void writeMotorDebugData(){
     SmartDashboard.putString("Exit Pose shooter", calcExitPos().toString());
     SmartDashboard.putNumber("Exit Angle shooter", calcExitAngle());
-    SmartDashboard.putNumber("RollerRPMNativeUnits", mRollerMotor.getRotorVelocity().getValue());
-    SmartDashboard.putNumber("FlyWheelRPMNativeUnits", mFlyWheelMotor.getRotorVelocity().getValue());
+    SmartDashboard.putNumber("Roller RPS NativeUnits", mRollerMotor.getRotorVelocity().getValue());
+    SmartDashboard.putNumber("FlyWheel RPS NativeUnits", mFlyWheelMotor.getRotorVelocity().getValue());
 
-    SmartDashboard.putNumber("FlyWheelRPMReal", getFlywheelRPM());
-    SmartDashboard.putNumber("RollerWheelRPMReal", getRollerRPM());
+    SmartDashboard.putNumber("FlyWheel RPM", getFlywheelRPM());
+    SmartDashboard.putNumber("RollerWheel RPM", getRollerRPM());
     
     SmartDashboard.putNumber("Flywheel Setpoint RPM", mFlywheelSetpoint);
     SmartDashboard.putNumber("Roller Setpoint RPM", mRollerSetpoint);
 
-    SmartDashboard.putNumber("PID output", mFlyWheelMotor.getClosedLoopOutput().getValue());
-    SmartDashboard.putNumber("PID Error", mFlyWheelMotor.getClosedLoopError().getValue());
+    SmartDashboard.putNumber("Native PID Output", mFlyWheelMotor.getClosedLoopOutput().getValue());
+    SmartDashboard.putNumber("Native PID Error", mFlyWheelMotor.getClosedLoopError().getValue());
+    SmartDashboard.putNumber("Native PID Setpoint", mFlyWheelMotor.getClosedLoopReference().getValue());
 
     SmartDashboard.putNumber("MOI",ShooterConstants.FLYWHEEL_MOI_KG_MPS);
     
     SmartDashboard.updateValues();
-   
   }
   abstract void writeControllerDebugData();
   
@@ -191,14 +193,14 @@ abstract class ShooterBase extends SubsystemBase {
     return motorRotationsPerMin * mode.mGearRatioToMotor;
   }
 
-  private Translation3d calcExitPos(){
+  private static Translation3d calcExitPos(){
     Translation3d originTranslation = ShooterConstants.ROLLER_LOC_M.minus(ShooterConstants.FLYWHEEL_LOC_M);
     double midpoint = (originTranslation.getNorm()-ShooterConstants.ROLLER_RADIUS_M-ShooterConstants.FLYWHEEL_RADIUS_M)/2;
     Translation3d midPointVector = Util.getNormalTranslation(originTranslation).times((ShooterConstants.FLYWHEEL_RADIUS_M + midpoint));
     return midPointVector.plus(ShooterConstants.FLYWHEEL_LOC_M);
   }
 
-  private double calcExitAngle(){
+  private static double calcExitAngle(){
     Translation3d originTranslation = ShooterConstants.ROLLER_LOC_M.minus(ShooterConstants.FLYWHEEL_LOC_M);
     Translation3d perpendicularVec = originTranslation.rotateBy(new Rotation3d(0, Math.PI/2, 0));
     Translation3d homePerpendicularVec = perpendicularVec.minus(originTranslation);
@@ -206,6 +208,7 @@ abstract class ShooterBase extends SubsystemBase {
   }
 
   private double calcExitVel(){
+    //TODO
     return 2;
   }
 
@@ -220,6 +223,7 @@ abstract class ShooterBase extends SubsystemBase {
     mRollerSim.update(0.02);
 
     SmartDashboard.putNumber("Flywheel sim output", mFlywheelSim.getAngularVelocityRPM());
+    SmartDashboard.putNumber("Roller sim output", mRollerSim.getAngularVelocityRPM());
 
     mFlywheelFalconSim.setRotorVelocity(velocityToNativeUnits(mFlywheelSim.getAngularVelocityRPM(),ShooterType.FLYWHEEL));
     mRollerFalconSim.setRotorVelocity(velocityToNativeUnits(mRollerSim.getAngularVelocityRPM(),ShooterType.ROLLER));

@@ -16,7 +16,7 @@ public class Input {
     public static final int DPADDOWN = 180;
     public static final int DPADLEFT = 270;
 
-    public static final XboxController mController = new XboxController(0);
+    public static final XboxController mController = new XboxController(1);
     public static final XboxControllerSim mSimController = new XboxControllerSim(mController);
 
     public static double getLeftJoyY(){return mController.getLeftY();}

@@ -64,10 +64,10 @@ public class ShooterIntegratedPID extends ShooterBase {
         mFlyWheelMotor.setControl(mCoastOut);
         mRollerMotor.setControl(mCoastOut);
         break;
-      // case MOTION_MAGIC_VOLTAGE:
-      //   mFlyWheelMotor.setControl(mMotionMagivVelVoltageOut.withVelocity(velocityToNativeUnits(mFlywheelSetpoint,ShooterType.FLYWHEEL)));
-      //   mRollerMotor.setControl(mMotionMagivVelVoltageOut.withVelocity(velocityToNativeUnits(mRollerSetpoint,ShooterType.FLYWHEEL)));
-      //   break;
+      case DUTY_CYCLE_VEL:
+        mFlyWheelMotor.setControl(mDutyCycle.withVelocity(velocityToNativeUnits(mFlywheelSetpoint,ShooterType.FLYWHEEL)));
+        mRollerMotor.setControl(mDutyCycle.withVelocity(velocityToNativeUnits(mRollerSetpoint,ShooterType.FLYWHEEL)));
+        break;
       case VOLTAGE_OUT:
         break;
     }
