@@ -56,6 +56,8 @@ public class ShooterConstants {
     public static final double FLYWHEEL_WEIGHT_KG = 0.150*4 + 0.493*2;
     public static final double ROLLER_WEIGHT_KG = 0.150*4 + 0.493*2;
 
+    public static final double FLYWHEEL_BAR_WEIGHT_KG = Units.lbsToKilograms(1.8);
+
     public static final double FLYWHEEL_MOI_CONSTANT = 1.0/2;
     public static final double ROLLER_MOI_CONSTANT = 1.0/2;
 

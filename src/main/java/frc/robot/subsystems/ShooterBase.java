@@ -18,18 +18,22 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.Util;
 import frc.robot.constants.GameConstants;
 import frc.robot.constants.ShooterConstants;
 import frc.robot.constants.ShooterConstants.ShooterState;
 
 abstract class ShooterBase extends SubsystemBase {
+
+
   /** Creates a new ShooterBase. */
-  protected final TalonFX mFlyWheelMotor = new TalonFX(ShooterConstants.FLYWHEEL_TALON_ID,"rio");
-  protected final TalonFX mRollerMotor = new TalonFX(ShooterConstants.ROLLER_TALON_ID,"rio");
+  protected static final TalonFX mFlyWheelMotor = new TalonFX(ShooterConstants.FLYWHEEL_TALON_ID,"rio");
+  protected static final TalonFX mRollerMotor = new TalonFX(ShooterConstants.ROLLER_TALON_ID,"rio");
 
   protected double mRollerSetpoint = ShooterConstants.ShooterState.HOME.mRollerRPM;
   protected double mFlywheelSetpoint = ShooterConstants.ShooterState.HOME.mFlyWheelRPM;
@@ -45,6 +49,20 @@ abstract class ShooterBase extends SubsystemBase {
 
   protected final TalonFXConfigurator mFlywheelConfigurator = mFlyWheelMotor.getConfigurator();
   protected final TalonFXConfigurator mRollerConfigurator = mRollerMotor.getConfigurator();
+
+  protected enum ShooterType{
+    ROLLER(ShooterConstants.MOTOR_TO_ROLLER_GEAR_RATIO, mRollerMotor),
+    FLYWHEEL(ShooterConstants.MOTOR_TO_FLWHEEL_GEAR_RATIO, mFlyWheelMotor);
+
+    protected double mGearRatioToMotor;
+    protected double mGearRatioToSensor;
+    protected TalonFX mShooterObject;
+    private ShooterType(double gearRatioToMotor, TalonFX shooterObject){
+        mGearRatioToMotor = gearRatioToMotor;
+        mGearRatioToSensor = 1/mGearRatioToMotor;
+        mShooterObject = shooterObject;
+    }
+}
 
   protected TalonControlType mControlSignal = TalonControlType.VELOCITY_VOLTAGE;
   
@@ -106,16 +124,19 @@ abstract class ShooterBase extends SubsystemBase {
    */
   public abstract void setRollerVelRaw(double rps);
 
-  public void setMotorRaw(){
+  public void setMotorRaw(ShooterType mType, double rpm){
     switch(mControlSignal){
       case VELOCITY_VOLTAGE:
-        mFlyWheelMotor.setControl(mVelocityVoltage);
+        mType.mShooterObject.setControl(mVelocityVoltage.withVelocity(velocityToNativeUnits(rpm, mType)));
+        break;
+      case DUTY_CYCLE_VEL:
+        mType.mShooterObject.setControl(mDutyCycle.withVelocity(velocityToNativeUnits(rpm, mType)));
         break;
       case COAST_OUT:
-        mFlyWheelMotor.setControl(mCoastOut);
+        mType.mShooterObject.setControl(mCoastOut);
         break;
       default:
-        mFlyWheelMotor.setControl(mVelocityVoltage);
+        mType.mShooterObject.setControl(mVelocityVoltage.withVelocity(velocityToNativeUnits(rpm, mType)));
         break;
     }
   }
@@ -160,7 +181,13 @@ abstract class ShooterBase extends SubsystemBase {
     SmartDashboard.putNumber("Native PID Setpoint", mFlyWheelMotor.getClosedLoopReference().getValue());
 
     SmartDashboard.putNumber("MOI",ShooterConstants.FLYWHEEL_MOI_KG_MPS);
-    
+    SmartDashboard.putNumber("Mass",ShooterConstants.FLYWHEEL_WEIGHT_KG);
+
+    if (RobotBase.isSimulation()){
+      SmartDashboard.putNumber("Flywheel sim output", mFlywheelSim.getAngularVelocityRPM());
+      SmartDashboard.putNumber("Roller sim output", mRollerSim.getAngularVelocityRPM());
+    }
+
     SmartDashboard.updateValues();
   }
   abstract void writeControllerDebugData();
@@ -221,9 +248,6 @@ abstract class ShooterBase extends SubsystemBase {
 
     mFlywheelSim.update(0.02);
     mRollerSim.update(0.02);
-
-    SmartDashboard.putNumber("Flywheel sim output", mFlywheelSim.getAngularVelocityRPM());
-    SmartDashboard.putNumber("Roller sim output", mRollerSim.getAngularVelocityRPM());
 
     mFlywheelFalconSim.setRotorVelocity(velocityToNativeUnits(mFlywheelSim.getAngularVelocityRPM(),ShooterType.FLYWHEEL));
     mRollerFalconSim.setRotorVelocity(velocityToNativeUnits(mRollerSim.getAngularVelocityRPM(),ShooterType.ROLLER));
